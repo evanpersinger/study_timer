@@ -181,6 +181,13 @@ class StudyTimer:
             self.sound_thread = threading.Thread(target=self.sound_loop, daemon=True)
             self.sound_thread.start()
     
+    def get_sound_for_duration(self):
+        """Get the appropriate sound based on study duration"""
+        if self.study_duration == 25:
+            return "/System/Library/Sounds/Glass.aiff"  # Glass sound for 25 min
+        else:
+            return "/System/Library/Sounds/Ping.aiff"   # Ping sound for 50 min
+    
     def sound_loop(self):
         """Play sound continuously until stopped"""
         try:
@@ -189,31 +196,12 @@ class StudyTimer:
                     winsound.Beep(1000, 500)  # 1000 Hz for 500ms
                     time.sleep(1)  # Wait 1 second between beeps
             elif platform.system() == "Darwin":  # macOS
-                # Try multiple Mac sound options
-                sounds = [
-                    "/System/Library/Sounds/Glass.aiff",
-                    "/System/Library/Sounds/Ping.aiff", 
-                    "/System/Library/Sounds/Submarine.aiff",
-                    "/System/Library/Sounds/Basso.aiff"
-                ]
-                working_sound = None
-                for sound in sounds:
-                    try:
-                        subprocess.run(["afplay", sound], check=True, capture_output=True)
-                        working_sound = sound
-                        break
-                    except:
-                        continue
-                
-                if not working_sound:
-                    working_sound = "beep"  # Fallback to system beep
+                # Get the appropriate sound based on study duration
+                working_sound = self.get_sound_for_duration()
                 
                 while self.playing_sound:
-                    if working_sound == "beep":
-                        subprocess.run(["osascript", "-e", "beep"], capture_output=True)
-                    else:
-                        subprocess.run(["afplay", working_sound], capture_output=True)
-                    time.sleep(2)  # Wait 2 seconds between sounds
+                    subprocess.run(["afplay", working_sound], capture_output=True)
+                    time.sleep(1)  # Wait 1 second between sounds
             else:  # Linux
                 while self.playing_sound:
                     subprocess.run(["paplay", "/usr/share/sounds/alsa/Front_Left.wav"], capture_output=True)
