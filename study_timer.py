@@ -22,8 +22,11 @@ class StudyTimer:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Study Timer")
-        self.root.geometry("600x500")
+        self.root.geometry("500x400")
         self.root.resizable(False, False)
+        
+        # Set dark theme colors
+        self.root.configure(bg='black')
         
         # Timer settings
         self.study_duration = 25  # minutes
@@ -51,17 +54,34 @@ class StudyTimer:
         main_frame = ttk.Frame(self.root, padding="20")
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
+        # Configure dark theme for ttk widgets
+        style = ttk.Style()
+        style.theme_use('clam')
+        style.configure('TLabel', background='black', foreground='white')
+        style.configure('TFrame', background='black')
+        style.configure('TButton', background='gray20', foreground='white')
+        style.configure('TLabelFrame', background='black', foreground='white')
+        
         # Title
         title_label = ttk.Label(main_frame, text="Study Timer", font=("Arial", 16, "bold"))
         title_label.grid(row=0, column=0, columnspan=2, pady=(0, 20))
         
-        # Timer display
-        self.timer_label = ttk.Label(main_frame, text="25:00", font=("Arial", 32, "bold"))
-        self.timer_label.grid(row=1, column=0, columnspan=2, pady=20)
+        # Timer display - dual clocks
+        timer_frame = ttk.Frame(main_frame)
+        timer_frame.grid(row=1, column=0, columnspan=2, pady=20)
         
-        # Status label
-        self.status_label = ttk.Label(main_frame, text="Ready to Study", font=("Arial", 12))
-        self.status_label.grid(row=2, column=0, columnspan=2, pady=(0, 20))
+        # Study time clock (left)
+        study_label = ttk.Label(timer_frame, text="Study", font=("Arial", 14, "bold"))
+        study_label.grid(row=0, column=0, padx=(0, 20))
+        self.timer_label = ttk.Label(timer_frame, text="25:00", font=("Arial", 32, "bold"))
+        self.timer_label.grid(row=1, column=0, padx=(0, 20))
+        
+        # Break time clock (right)
+        break_label = ttk.Label(timer_frame, text="Break", font=("Arial", 14, "bold"))
+        break_label.grid(row=0, column=1, padx=(20, 0))
+        self.break_timer_label = ttk.Label(timer_frame, text="05:00", font=("Arial", 32, "bold"))
+        self.break_timer_label.grid(row=1, column=1, padx=(20, 0))
+        
         
         # Preset buttons
         preset_frame = ttk.Frame(main_frame)
@@ -81,15 +101,12 @@ class StudyTimer:
         
         ttk.Button(control_frame, text="Reset", command=self.reset_timer).grid(row=0, column=1, padx=5)
         
-        # Session info
-        info_frame = ttk.LabelFrame(main_frame, text="Session Info", padding="10")
-        info_frame.grid(row=5, column=0, columnspan=2, sticky=(tk.W, tk.E))
+        # Session info (without box) - larger text
+        self.session_label = ttk.Label(main_frame, text="Sessions: 0", font=("Arial", 14, "bold"))
+        self.session_label.grid(row=5, column=0, columnspan=2, pady=(20, 5))
         
-        self.session_label = ttk.Label(info_frame, text="Sessions: 0")
-        self.session_label.grid(row=0, column=0, sticky=tk.W)
-        
-        self.total_time_label = ttk.Label(info_frame, text="Total Study: 0:00")
-        self.total_time_label.grid(row=1, column=0, sticky=tk.W)
+        self.total_time_label = ttk.Label(main_frame, text="Total Study: 0:00", font=("Arial", 14, "bold"))
+        self.total_time_label.grid(row=6, column=0, columnspan=2, pady=(0, 20))
     
     def set_25_5(self):
         """Set timer to 25 minute study, 5 minute break"""
@@ -97,7 +114,6 @@ class StudyTimer:
             self.study_duration = 25
             self.break_duration = 5
             self.reset_timer()
-            self.status_label.config(text="25 min Study / 5 min Break")
     
     def set_50_10(self):
         """Set timer to 50 minute study, 10 minute break"""
@@ -105,7 +121,6 @@ class StudyTimer:
             self.study_duration = 50
             self.break_duration = 10
             self.reset_timer()
-            self.status_label.config(text="50 min Study / 10 min Break")
     
     def toggle_timer(self):
         """Start, pause, or stop the timer"""
@@ -144,7 +159,6 @@ class StudyTimer:
         self.start_button.config(text="Start")
         self.stop_sound()
         self.update_display()
-        self.status_label.config(text="Ready to Study")
     
     def timer_loop(self):
         """Main timer loop running in separate thread"""
@@ -171,7 +185,6 @@ class StudyTimer:
             # Switch to break
             self.is_study_time = False
             self.time_remaining = self.break_duration * 60
-            self.status_label.config(text=f"Break Time - {self.break_duration} minutes")
         else:
             # Break completed
             self.play_notification_sound()
@@ -179,7 +192,6 @@ class StudyTimer:
             # Switch to study
             self.is_study_time = True
             self.time_remaining = self.study_duration * 60
-            self.status_label.config(text=f"Study Time - {self.study_duration} minutes")
         
         self.update_display()
         self.update_session_info()
@@ -232,9 +244,15 @@ class StudyTimer:
     
     def update_display(self):
         """Update the timer display"""
+        # Current timer
         minutes = self.time_remaining // 60
         seconds = self.time_remaining % 60
         self.timer_label.config(text=f"{minutes:02d}:{seconds:02d}")
+        
+        # Break timer (always shows break duration)
+        break_minutes = self.break_duration
+        break_seconds = 0
+        self.break_timer_label.config(text=f"{break_minutes:02d}:{break_seconds:02d}")
     
     def update_session_info(self):
         """Update session information display"""
@@ -243,6 +261,7 @@ class StudyTimer:
         total_hours = self.total_study_time // 60
         total_minutes = self.total_study_time % 60
         self.total_time_label.config(text=f"Total Study: {total_hours}:{total_minutes:02d}")
+    
     
     def run(self):
         """Start the application"""
