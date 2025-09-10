@@ -41,6 +41,9 @@ class StudyTimer:
         
         self.setup_ui()
         self.update_display()
+        
+        # Handle window closing
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
     
     def setup_ui(self):
         """Create the user interface"""
@@ -105,11 +108,13 @@ class StudyTimer:
             self.status_label.config(text="50 min Study / 10 min Break")
     
     def toggle_timer(self):
-        """Start or pause the timer"""
-        if not self.is_running:
+        """Start, pause, or stop the timer"""
+        if self.start_button.cget("text") == "Start":
             self.start_timer()
-        else:
+        elif self.start_button.cget("text") == "Pause":
             self.pause_timer()
+        elif self.start_button.cget("text") == "Stop":
+            self.stop_timer()
     
     def start_timer(self):
         """Start the timer"""
@@ -121,6 +126,13 @@ class StudyTimer:
     def pause_timer(self):
         """Pause the timer"""
         self.is_running = False
+        self.start_button.config(text="Start")
+        self.stop_sound()
+    
+    def stop_timer(self):
+        """Stop the timer and sound"""
+        self.is_running = False
+        self.playing_sound = False
         self.start_button.config(text="Start")
         self.stop_sound()
     
@@ -148,14 +160,13 @@ class StudyTimer:
     def timer_complete(self):
         """Handle timer completion"""
         self.is_running = False
-        self.start_button.config(text="Start")
+        self.start_button.config(text="Stop")
         
         if self.is_study_time:
             # Study session completed
             self.session_count += 1
             self.total_study_time += self.study_duration
             self.play_notification_sound()
-            self.show_completion_message("Study session complete! Time for a break.")
             
             # Switch to break
             self.is_study_time = False
@@ -164,7 +175,6 @@ class StudyTimer:
         else:
             # Break completed
             self.play_notification_sound()
-            self.show_completion_message("Break over! Ready to study again.")
             
             # Switch to study
             self.is_study_time = True
@@ -213,9 +223,12 @@ class StudyTimer:
         """Stop playing notification sound"""
         self.playing_sound = False
     
-    def show_completion_message(self, message):
-        """Show completion message"""
-        messagebox.showinfo("Timer Complete", message)
+    def on_closing(self):
+        """Handle window closing - stop all sounds and threads"""
+        self.is_running = False
+        self.playing_sound = False
+        self.root.destroy()
+    
     
     def update_display(self):
         """Update the timer display"""
