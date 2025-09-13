@@ -1,6 +1,6 @@
 # Study Timer Data Directory
 
-This directory contains study session data collected by the Study Timer application.
+This directory contains study session data collected by the Study Timer application. All your study progress is automatically tracked and stored here.
 
 ## File Format
 
@@ -9,7 +9,7 @@ All daily data is stored in a single JSON file:
 
 ## Getting Started
 
-1. **Copy the template file:**
+1. **Copy the template file (first time only):**
    ```bash
    cp data/data_example.json data/data.json
    ```
@@ -19,7 +19,7 @@ All daily data is stored in a single JSON file:
    python study_timer.py
    ```
 
-The app will automatically use your personal `data.json` file for tracking your study sessions.
+The app will automatically create and use your personal `data.json` file for tracking your study sessions. No manual setup required after the first run!
 
 ## Files in this Directory
 
@@ -44,7 +44,10 @@ The file contains all days organized by date:
 - **Daily Reset**: Each day starts fresh with 0 sessions and 0 minutes
 - **Historical Data**: Previous days' data is preserved in the same file
 - **Automatic Updates**: Data is updated automatically when you complete study sessions
+- **Partial Session Tracking**: If you pause or reset mid-session, partial study time is automatically added
 - **Data Persistence**: All data is saved automatically and persists between app sessions
+- **Real-time Display**: Your current day's progress is shown live in the app interface
+- **Automatic Loading**: Data is loaded automatically when you start the app
 
 ## Viewing Your Data
 
@@ -52,6 +55,27 @@ The file contains all days organized by date:
 - The data.json file can be opened directly to view all historical data
 - Each date entry represents one day of study activity
 
+## Data Management
+
+### Backup Your Data
+Your study data is valuable! Consider backing up your `data.json` file regularly:
+```bash
+# Create a backup
+cp data/data.json data/data_backup_$(date +%Y%m%d).json
+```
+
+### Reset Your Data
+If you want to start fresh:
+```bash
+# Reset to empty data
+echo '{}' > data/data.json
+```
+
+### Data Integrity
+- The app automatically creates the data directory if it doesn't exist
+- If the data file becomes corrupted, the app will start fresh for that day
+- All data operations are atomic - either the save succeeds completely or fails safely
+
 ## Privacy
 
-All data is stored locally on your computer. No data is sent to external servers.
+All data is stored locally on your computer. No data is sent to external servers or cloud services.

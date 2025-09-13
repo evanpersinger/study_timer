@@ -23,7 +23,7 @@ class StudyTimer:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Study Timer")
-        self.root.geometry("540x380")
+        self.root.geometry("440x320")
         self.root.resizable(False, False)
         
         # Set dark theme colors
@@ -46,6 +46,7 @@ class StudyTimer:
         # Session tracking
         self.session_count = 0
         self.total_study_time = 0
+        self.session_start_time = None  # Track when current session started
         
         # Data collection
         self.data_dir = "data"
@@ -111,8 +112,13 @@ class StudyTimer:
                   command=self.set_25_5).grid(row=0, column=0, padx=5)
         ttk.Button(preset_frame, text="50 min study / 10 min break", # 50 min button
                   command=self.set_50_10).grid(row=0, column=1, padx=5)
+        
+        
+        # Temporarily disabled test button
+        """
         ttk.Button(preset_frame, text="TEST (10 sec)", # Test button
                   command=self.set_test).grid(row=0, column=2, padx=5)
+        """
         
         # Control buttons
         control_frame = ttk.Frame(main_frame)
@@ -133,12 +139,6 @@ class StudyTimer:
         self.study_button.grid(row=0, column=3, padx=5)
         self.study_button.grid_remove()  # Hide initially
         
-        # Session info (without box) - larger text
-        self.session_label = ttk.Label(main_frame, text="Sessions: 0", font=("Arial", 14, "bold"))
-        self.session_label.grid(row=5, column=0, columnspan=2, pady=(20, 5))
-        
-        self.total_time_label = ttk.Label(main_frame, text="Total Study: 0:00", font=("Arial", 14, "bold"))
-        self.total_time_label.grid(row=6, column=0, columnspan=2, pady=(0, 20))
         
     
     def set_25_5(self):
@@ -175,6 +175,11 @@ class StudyTimer:
         """Start the timer"""
         self.is_running = True
         self.start_button.config(text="Pause")
+        
+        # Set session start time if starting a study session
+        if self.is_study_time and self.session_start_time is None:
+            self.session_start_time = time.time()
+        
         self.timer_thread = threading.Thread(target=self.timer_loop, daemon=True)
         self.timer_thread.start()
     
@@ -190,6 +195,9 @@ class StudyTimer:
         self.playing_sound = False
         self.stop_sound()
         
+        # Add partial session time to total study time
+        self.add_partial_session_time()
+        
         # Just stop the sound, don't auto-start anything
         self.start_button.config(text="Start")
         self.update_display()
@@ -199,6 +207,10 @@ class StudyTimer:
         self.break_button.grid_remove()  # Hide the break button
         self.playing_sound = False  # Stop the notification sound
         self.stop_sound()
+        
+        # Add partial session time to total study time before switching to break
+        self.add_partial_session_time()
+        
         self.start_button.config(text="Pause")
         self.start_timer()
         self.update_display()
@@ -208,6 +220,10 @@ class StudyTimer:
         self.study_button.grid_remove()  # Hide the study button
         self.playing_sound = False  # Stop the notification sound
         self.stop_sound()
+        
+        # Add partial session time to total study time before starting new study session
+        self.add_partial_session_time()
+        
         self.start_button.config(text="Pause")
         self.start_timer()
         self.update_display()
@@ -215,6 +231,10 @@ class StudyTimer:
     def reset_timer(self):
         """Reset the timer to initial state"""
         self.is_running = False
+        
+        # Add partial session time to total study time before resetting
+        self.add_partial_session_time()
+        
         self.is_study_time = True
         self.time_remaining = self.study_duration * 60
         self.start_button.config(text="Start")
@@ -247,6 +267,9 @@ class StudyTimer:
             self.save_data()  # Save data after each study session
             self.play_notification_sound()
             
+            # Reset session start time since session completed naturally
+            self.session_start_time = None
+            
             # Switch to break mode and prepare break timer
             self.is_study_time = False
             self.time_remaining = self.break_duration * 60
@@ -267,7 +290,6 @@ class StudyTimer:
             self.start_button.config(text="Start")
         
         self.update_display()
-        self.update_session_info()
     
     def play_notification_sound(self):
         """Start playing notification sound continuously"""
@@ -315,6 +337,23 @@ class StudyTimer:
     def stop_sound(self):
         """Stop playing notification sound"""
         self.playing_sound = False
+    
+    def add_partial_session_time(self):
+        """Add partial session time to total study time if in study mode"""
+        if self.is_study_time and self.session_start_time is not None:
+            # Calculate how much study time was completed
+            elapsed_time = time.time() - self.session_start_time
+            elapsed_minutes = elapsed_time / 60
+            
+            # Add to total study time
+            self.total_study_time += elapsed_minutes
+            print(f"Added {elapsed_minutes:.2f} minutes of partial session to total study time")
+            
+            # Save the updated data
+            self.save_data()
+            
+            # Reset session start time
+            self.session_start_time = None
     
     def load_data(self):
         """Load today's study data from file"""
@@ -407,13 +446,6 @@ class StudyTimer:
             seconds = int(self.time_remaining % 60)
             self.break_timer_label.config(text=f"{minutes:02d}:{seconds:02d}")
     
-    def update_session_info(self):
-        """Update session information display"""
-        self.session_label.config(text=f"Sessions: {self.session_count}")
-        
-        total_hours = int(self.total_study_time // 60)
-        total_minutes = int(self.total_study_time % 60)
-        self.total_time_label.config(text=f"Total Study: {total_hours}:{total_minutes:02d}")
     
     
     def run(self):
