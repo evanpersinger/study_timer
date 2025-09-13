@@ -67,6 +67,14 @@ class StudyTimer:
         style.configure('TButton', background='gray20', foreground='white')
         style.configure('TLabelFrame', background='black', foreground='white')
         
+        # Configure custom button hover effect with ring/border
+        style.configure('TButton', relief='flat', borderwidth=1)
+        style.map('TButton',
+                  background=[('active', 'gray30')],  # Slightly lighter background on hover
+                  foreground=[('active', 'white')],   # Keep white text
+                  relief=[('active', 'solid')],        # Solid border on hover
+                  borderwidth=[('active', '2')])       # 2px border on hover
+        
         # Title
         title_label = ttk.Label(main_frame, text="Study Timer", font=("Arial", 16, "bold"))
         title_label.grid(row=0, column=0, columnspan=2, pady=(0, 20))
