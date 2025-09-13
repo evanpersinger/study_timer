@@ -227,10 +227,9 @@ class StudyTimer:
             self.is_study_time = True
             self.time_remaining = self.study_duration * 60
             
-            # Hide break button and auto-start study timer
+            # Hide break button and show Start button (don't auto-start)
             self.break_button.grid_remove()
-            self.start_button.config(text="Pause")
-            self.start_timer()
+            self.start_button.config(text="Start")
         
         self.update_display()
         self.update_session_info()
