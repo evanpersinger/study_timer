@@ -23,7 +23,7 @@ class StudyTimer:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Study Timer")
-        self.root.geometry("500x400")
+        self.root.geometry("600x450")
         self.root.resizable(False, False)
         
         # Set dark theme colors
@@ -48,7 +48,7 @@ class StudyTimer:
         self.total_study_time = 0
         
         # Data collection
-        self.data_dir = "study_data"
+        self.data_dir = "data"
         self.today = datetime.now().strftime("%Y-%m-%d")
         self.data_file = os.path.join(self.data_dir, f"study_data_{self.today}.json")
         self.load_data()
@@ -140,8 +140,6 @@ class StudyTimer:
         self.total_time_label = ttk.Label(main_frame, text="Total Study: 0:00", font=("Arial", 14, "bold"))
         self.total_time_label.grid(row=6, column=0, columnspan=2, pady=(0, 20))
         
-        # Data view button
-        ttk.Button(main_frame, text="View Data", command=self.show_data).grid(row=7, column=0, columnspan=2, pady=(0, 20))
     
     def set_25_5(self):
         """Set timer to 25 minute study, 5 minute break"""
