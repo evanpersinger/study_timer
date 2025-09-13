@@ -12,15 +12,10 @@ All daily data is stored in a single JSON file:
 The file contains all days organized by date:
 ```json
 {
-  "2024-01-14": {
-    "session_count": 4,
-    "total_study_time": 100,
-    "last_updated": "2024-01-14T23:45:30.123456"
-  },
-  "2024-01-15": {
+  "2025-01-15": {
     "session_count": 3,
     "total_study_time": 75,
-    "last_updated": "2024-01-15T14:30:00"
+    "last_updated": "2025-01-15T14:30:00.000000"
   }
 }
 ```
@@ -34,7 +29,7 @@ The file contains all days organized by date:
 
 ## Viewing Your Data
 
-- Use the "View Data" button in the Study Timer app to see today's statistics
+- View your progress in real-time on the Study Timer app's main interface
 - The data.json file can be opened directly to view all historical data
 - Each date entry represents one day of study activity
 

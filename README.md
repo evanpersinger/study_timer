@@ -37,7 +37,6 @@ A simple, effective Pomodoro-style study timer built with Python and tkinter. Pe
 
 4. **Track your progress:**
    - View completed sessions and total study time at the bottom
-   - Click "View Data" to see today's study statistics
    - Daily data automatically resets each day but preserves historical data
 
 ## Data Collection
@@ -48,21 +47,16 @@ The Study Timer automatically collects and stores your daily study data:
 - **Automatic Reset**: Session count and study time reset to 0 each new day
 - **Historical Data**: Previous days' data is preserved in the same file
 - **Privacy**: All data is stored locally on your computer
-- **View Data**: Click "View Data" button to see today's statistics
+- **Real-time Tracking**: See your progress displayed live during study sessions
 
 ### Data Structure
 The data file contains all days organized by date:
 ```json
 {
-  "2024-01-14": {
-    "session_count": 4,
-    "total_study_time": 100,
-    "last_updated": "2024-01-14T23:45:30.123456"
-  },
-  "2024-01-15": {
+  "2025-01-15": {
     "session_count": 3,
     "total_study_time": 75,
-    "last_updated": "2024-01-15T14:30:00"
+    "last_updated": "2025-01-15T14:30:00.000000"
   }
 }
 ```
@@ -91,8 +85,8 @@ python study_timer.py
 2. **Use manual control** - Click "Start Break" and "Start Study" when you're ready, not when the timer says
 3. **Eliminate distractions** - Close unnecessary apps and notifications
 4. **Take breaks seriously** - Step away from your desk during break time
-5. **Track your progress** - Use the "View Data" button to see your daily study statistics
-6. **Build habits** - Check your daily data to maintain consistent study routines
+5. **Track your progress** - Monitor your daily sessions and total study time in real-time
+6. **Build habits** - Use the session counter to maintain consistent study routines
 7. **Stop notifications** - Click "Stop" to silence the notification sound when you're ready
 
 ## Troubleshooting
