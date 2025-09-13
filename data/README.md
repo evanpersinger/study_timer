@@ -7,6 +7,25 @@ This directory contains study session data collected by the Study Timer applicat
 All daily data is stored in a single JSON file:
 `data.json`
 
+## Getting Started
+
+1. **Copy the template file:**
+   ```bash
+   cp data/data_example.json data/data.json
+   ```
+
+2. **Run the Study Timer:**
+   ```bash
+   python study_timer.py
+   ```
+
+The app will automatically use your personal `data.json` file for tracking your study sessions.
+
+## Files in this Directory
+
+- `data_example.json` - Template file showing the expected data structure
+- `data.json` - Your personal study data (created when you copy the template)
+
 ## Data Structure
 
 The file contains all days organized by date:

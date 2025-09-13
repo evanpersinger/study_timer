@@ -49,6 +49,20 @@ The Study Timer automatically collects and stores your daily study data:
 - **Privacy**: All data is stored locally on your computer
 - **Real-time Tracking**: See your progress displayed live during study sessions
 
+### Getting Started
+
+1. **Copy the template file:**
+   ```bash
+   cp data/data_example.json data/data.json
+   ```
+
+2. **Run the timer:**
+   ```bash
+   python study_timer.py
+   ```
+
+The app will automatically create and use your personal `data.json` file for tracking your study sessions.
+
 ### Data Structure
 The data file contains all days organized by date:
 ```json
