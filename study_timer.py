@@ -181,6 +181,8 @@ class StudyTimer:
     def start_break_timer(self):
         """Start the break timer when user clicks the break button"""
         self.break_button.grid_remove()  # Hide the break button
+        self.playing_sound = False  # Stop the notification sound
+        self.stop_sound()
         self.start_button.config(text="Pause")
         self.start_timer()
         self.update_display()
@@ -188,6 +190,8 @@ class StudyTimer:
     def start_study_timer(self):
         """Start the study timer when user clicks the study button"""
         self.study_button.grid_remove()  # Hide the study button
+        self.playing_sound = False  # Stop the notification sound
+        self.stop_sound()
         self.start_button.config(text="Pause")
         self.start_timer()
         self.update_display()
