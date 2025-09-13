@@ -113,6 +113,11 @@ class StudyTimer:
         self.break_button.grid(row=0, column=2, padx=5)
         self.break_button.grid_remove()  # Hide initially
         
+        # Study button (initially hidden)
+        self.study_button = ttk.Button(control_frame, text="Start Study", command=self.start_study_timer)
+        self.study_button.grid(row=0, column=3, padx=5)
+        self.study_button.grid_remove()  # Hide initially
+        
         # Session info (without box) - larger text
         self.session_label = ttk.Label(main_frame, text="Sessions: 0", font=("Arial", 14, "bold"))
         self.session_label.grid(row=5, column=0, columnspan=2, pady=(20, 5))
@@ -180,6 +185,13 @@ class StudyTimer:
         self.start_timer()
         self.update_display()
     
+    def start_study_timer(self):
+        """Start the study timer when user clicks the study button"""
+        self.study_button.grid_remove()  # Hide the study button
+        self.start_button.config(text="Pause")
+        self.start_timer()
+        self.update_display()
+    
     def reset_timer(self):
         """Reset the timer to initial state"""
         self.is_running = False
@@ -187,6 +199,7 @@ class StudyTimer:
         self.time_remaining = self.study_duration * 60
         self.start_button.config(text="Start")
         self.break_button.grid_remove()  # Hide break button
+        self.study_button.grid_remove()  # Hide study button
         self.stop_sound()
         self.update_display()
     
@@ -227,8 +240,9 @@ class StudyTimer:
             self.is_study_time = True
             self.time_remaining = self.study_duration * 60
             
-            # Hide break button and show Start button (don't auto-start)
+            # Hide break button and show Start Study button (don't auto-start)
             self.break_button.grid_remove()
+            self.study_button.grid()
             self.start_button.config(text="Start")
         
         self.update_display()
