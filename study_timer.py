@@ -11,6 +11,7 @@ from tkinter import ttk, messagebox
 import platform
 import subprocess
 import os
+import json
 from datetime import datetime, timedelta
 
 # Import winsound only on Windows
@@ -45,6 +46,12 @@ class StudyTimer:
         # Session tracking
         self.session_count = 0
         self.total_study_time = 0
+        
+        # Data collection
+        self.data_dir = "study_data"
+        self.today = datetime.now().strftime("%Y-%m-%d")
+        self.data_file = os.path.join(self.data_dir, f"study_data_{self.today}.json")
+        self.load_data()
         
         # Setup UI
         self.setup_ui()
@@ -132,6 +139,9 @@ class StudyTimer:
         
         self.total_time_label = ttk.Label(main_frame, text="Total Study: 0:00", font=("Arial", 14, "bold"))
         self.total_time_label.grid(row=6, column=0, columnspan=2, pady=(0, 20))
+        
+        # Data view button
+        ttk.Button(main_frame, text="View Data", command=self.show_data).grid(row=7, column=0, columnspan=2, pady=(0, 20))
     
     def set_25_5(self):
         """Set timer to 25 minute study, 5 minute break"""
@@ -236,6 +246,7 @@ class StudyTimer:
             # Study session completed
             self.session_count += 1
             self.total_study_time += self.study_duration
+            self.save_data()  # Save data after each study session
             self.play_notification_sound()
             
             # Switch to break mode and prepare break timer
@@ -307,10 +318,67 @@ class StudyTimer:
         """Stop playing notification sound"""
         self.playing_sound = False
     
+    def load_data(self):
+        """Load today's study data from file"""
+        try:
+            # Create data directory if it doesn't exist
+            if not os.path.exists(self.data_dir):
+                os.makedirs(self.data_dir)
+                print(f"Created data directory: {self.data_dir}")
+            
+            # Load today's data
+            if os.path.exists(self.data_file):
+                with open(self.data_file, 'r') as f:
+                    data = json.load(f)
+                    self.session_count = data.get('session_count', 0)
+                    self.total_study_time = data.get('total_study_time', 0)
+                    print(f"Loaded today's data: {self.session_count} sessions, {self.total_study_time} minutes")
+            else:
+                print(f"No data file found for today ({self.today}), starting fresh")
+                self.session_count = 0
+                self.total_study_time = 0
+        except Exception as e:
+            print(f"Error loading data: {e}")
+            # Start fresh if there's an error
+            self.session_count = 0
+            self.total_study_time = 0
+    
+    def save_data(self):
+        """Save today's study data to file"""
+        try:
+            data = {
+                'date': self.today,
+                'session_count': self.session_count,
+                'total_study_time': self.total_study_time,
+                'last_updated': datetime.now().isoformat()
+            }
+            with open(self.data_file, 'w') as f:
+                json.dump(data, f, indent=2)
+            print(f"Saved today's data: {self.session_count} sessions, {self.total_study_time} minutes")
+        except Exception as e:
+            print(f"Error saving data: {e}")
+    
+    def show_data(self):
+        """Show today's collected data in a popup window"""
+        total_hours = int(self.total_study_time // 60)
+        total_minutes = int(self.total_study_time % 60)
+        
+        data_text = f"""Today's Study Data ({self.today}):
+        
+Study Sessions Today: {self.session_count}
+Study Time Today: {total_hours} hours {total_minutes} minutes
+Average Session Length: {self.study_duration} minutes
+
+Historical data stored in: {self.data_dir}/
+Each day's data is saved separately and resets daily."""
+        
+        messagebox.showinfo("Today's Study Data", data_text)
+    
     def on_closing(self):
         """Handle window closing - stop all sounds and threads"""
         self.is_running = False
         self.playing_sound = False
+        self.save_data()  # Save data before closing
         self.root.destroy()
     
     
