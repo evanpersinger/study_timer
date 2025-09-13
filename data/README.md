@@ -1,38 +1,42 @@
 # Study Timer Data Directory
 
-This directory contains daily study session data collected by the Study Timer application.
+This directory contains study session data collected by the Study Timer application.
 
 ## File Format
 
-Each day's data is stored in a separate JSON file with the format:
-`study_data_YYYY-MM-DD.json`
-
-Example: `study_data_2024-01-15.json`
+All daily data is stored in a single JSON file:
+`data.json`
 
 ## Data Structure
 
-Each file contains:
+The file contains all days organized by date:
 ```json
 {
-  "date": "2024-01-15",
-  "session_count": 3,
-  "total_study_time": 75,
-  "last_updated": "2024-01-15T14:30:00"
+  "2024-01-14": {
+    "session_count": 4,
+    "total_study_time": 100,
+    "last_updated": "2024-01-14T23:45:30.123456"
+  },
+  "2024-01-15": {
+    "session_count": 3,
+    "total_study_time": 75,
+    "last_updated": "2024-01-15T14:30:00"
+  }
 }
 ```
 
 ## How It Works
 
 - **Daily Reset**: Each day starts fresh with 0 sessions and 0 minutes
-- **Historical Data**: Previous days' data is preserved in separate files
-- **Automatic Creation**: Files are created automatically when you complete study sessions
+- **Historical Data**: Previous days' data is preserved in the same file
+- **Automatic Updates**: Data is updated automatically when you complete study sessions
 - **Data Persistence**: All data is saved automatically and persists between app sessions
 
 ## Viewing Your Data
 
 - Use the "View Data" button in the Study Timer app to see today's statistics
-- Historical data files can be opened directly to view past days' data
-- Each file represents one day of study activity
+- The data.json file can be opened directly to view all historical data
+- Each date entry represents one day of study activity
 
 ## Privacy
 

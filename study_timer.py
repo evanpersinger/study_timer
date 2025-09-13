@@ -23,7 +23,7 @@ class StudyTimer:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Study Timer")
-        self.root.geometry("600x450")
+        self.root.geometry("540x380")
         self.root.resizable(False, False)
         
         # Set dark theme colors
@@ -50,7 +50,7 @@ class StudyTimer:
         # Data collection
         self.data_dir = "data"
         self.today = datetime.now().strftime("%Y-%m-%d")
-        self.data_file = os.path.join(self.data_dir, f"study_data_{self.today}.json")
+        self.data_file = os.path.join(self.data_dir, "data.json")
         self.load_data()
         
         # Setup UI
@@ -324,15 +324,23 @@ class StudyTimer:
                 os.makedirs(self.data_dir)
                 print(f"Created data directory: {self.data_dir}")
             
-            # Load today's data
+            # Load data
             if os.path.exists(self.data_file):
                 with open(self.data_file, 'r') as f:
-                    data = json.load(f)
-                    self.session_count = data.get('session_count', 0)
-                    self.total_study_time = data.get('total_study_time', 0)
+                    all_data = json.load(f)
+                    
+                # Check if we have data for today
+                if self.today in all_data:
+                    today_data = all_data[self.today]
+                    self.session_count = today_data.get('session_count', 0)
+                    self.total_study_time = today_data.get('total_study_time', 0)
                     print(f"Loaded today's data: {self.session_count} sessions, {self.total_study_time} minutes")
+                else:
+                    print(f"No data found for today ({self.today}), starting fresh")
+                    self.session_count = 0
+                    self.total_study_time = 0
             else:
-                print(f"No data file found for today ({self.today}), starting fresh")
+                print(f"No data file found, starting fresh")
                 self.session_count = 0
                 self.total_study_time = 0
         except Exception as e:
@@ -344,14 +352,22 @@ class StudyTimer:
     def save_data(self):
         """Save today's study data to file"""
         try:
-            data = {
-                'date': self.today,
+            # Load existing data
+            all_data = {}
+            if os.path.exists(self.data_file):
+                with open(self.data_file, 'r') as f:
+                    all_data = json.load(f)
+            
+            # Update today's data
+            all_data[self.today] = {
                 'session_count': self.session_count,
                 'total_study_time': self.total_study_time,
                 'last_updated': datetime.now().isoformat()
             }
+            
+            # Save all data back to file
             with open(self.data_file, 'w') as f:
-                json.dump(data, f, indent=2)
+                json.dump(all_data, f, indent=2)
             print(f"Saved today's data: {self.session_count} sessions, {self.total_study_time} minutes")
         except Exception as e:
             print(f"Error saving data: {e}")

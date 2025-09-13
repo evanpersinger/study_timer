@@ -11,7 +11,7 @@ A simple, effective Pomodoro-style study timer built with Python and tkinter. Pe
 - **Audio Notifications** - Beeps when study/break sessions complete
 - **Manual Control** - Start Break and Start Study buttons for flexible timing
 - **Daily Data Collection** - Tracks sessions and study time with automatic daily reset
-- **Historical Data Storage** - Saves daily data files for long-term tracking
+- **Historical Data Storage** - Saves all daily data in one organized file for long-term tracking
 - **Session Tracking** - Real-time display of completed sessions and total study time
 - **Cross-Platform** - Works on Windows, macOS, and Linux
 - **Simple GUI** - Clean, distraction-free interface with custom button hover effects
@@ -44,20 +44,26 @@ A simple, effective Pomodoro-style study timer built with Python and tkinter. Pe
 
 The Study Timer automatically collects and stores your daily study data:
 
-- **Daily Files**: Each day's data is saved to `study_data/study_data_YYYY-MM-DD.json`
+- **Single Data File**: All daily data is saved to `data/data.json`
 - **Automatic Reset**: Session count and study time reset to 0 each new day
-- **Historical Data**: Previous days' data is preserved in separate files
+- **Historical Data**: Previous days' data is preserved in the same file
 - **Privacy**: All data is stored locally on your computer
 - **View Data**: Click "View Data" button to see today's statistics
 
 ### Data Structure
-Each daily file contains:
+The data file contains all days organized by date:
 ```json
 {
-  "date": "2024-01-15",
-  "session_count": 3,
-  "total_study_time": 75,
-  "last_updated": "2024-01-15T14:30:00"
+  "2024-01-14": {
+    "session_count": 4,
+    "total_study_time": 100,
+    "last_updated": "2024-01-14T23:45:30.123456"
+  },
+  "2024-01-15": {
+    "session_count": 3,
+    "total_study_time": 75,
+    "last_updated": "2024-01-15T14:30:00"
+  }
 }
 ```
 

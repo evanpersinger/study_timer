@@ -1,6 +1,12 @@
 {
-    "date": "2025-09-13",
+  "2025-09-12": {
+    "session_count": 4,
+    "total_study_time": 100,
+    "last_updated": "2025-09-12T23:45:30.123456"
+  },
+  "2025-09-13": {
     "session_count": 0,
     "total_study_time": 0,
     "last_updated": "2025-09-13T00:01:37.413793"
   }
+}
