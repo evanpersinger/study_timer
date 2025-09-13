@@ -7,12 +7,12 @@ Supports both 50/10 minute and 25/5 minute study/break intervals
 import time
 import threading
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk
 import platform
 import subprocess
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # Import winsound only on Windows
 if platform.system() == "Windows":
@@ -107,21 +107,21 @@ class StudyTimer:
         preset_frame = ttk.Frame(main_frame)
         preset_frame.grid(row=3, column=0, columnspan=2, pady=(0, 20))
         
-        ttk.Button(preset_frame, text="25 min Study / 5 min Break", 
+        ttk.Button(preset_frame, text="25 min study / 5 min break", # 25 min button
                   command=self.set_25_5).grid(row=0, column=0, padx=5)
-        ttk.Button(preset_frame, text="50 min Study / 10 min Break", 
+        ttk.Button(preset_frame, text="50 min study / 10 min break", # 50 min button
                   command=self.set_50_10).grid(row=0, column=1, padx=5)
-        ttk.Button(preset_frame, text="TEST (10 sec)", 
+        ttk.Button(preset_frame, text="TEST (10 sec)", # Test button
                   command=self.set_test).grid(row=0, column=2, padx=5)
         
         # Control buttons
         control_frame = ttk.Frame(main_frame)
         control_frame.grid(row=4, column=0, columnspan=2, pady=(0, 20))
         
-        self.start_button = ttk.Button(control_frame, text="Start", command=self.toggle_timer)
+        self.start_button = ttk.Button(control_frame, text="Start", command=self.toggle_timer) # Start button
         self.start_button.grid(row=0, column=0, padx=5)
         
-        ttk.Button(control_frame, text="Reset", command=self.reset_timer).grid(row=0, column=1, padx=5)
+        ttk.Button(control_frame, text="Reset", command=self.reset_timer).grid(row=0, column=1, padx=5) # Reset button
         
         # Break button (initially hidden)
         self.break_button = ttk.Button(control_frame, text="Start Break", command=self.start_break_timer)
@@ -372,21 +372,7 @@ class StudyTimer:
         except Exception as e:
             print(f"Error saving data: {e}")
     
-    def show_data(self):
-        """Show today's collected data in a popup window"""
-        total_hours = int(self.total_study_time // 60)
-        total_minutes = int(self.total_study_time % 60)
-        
-        data_text = f"""Today's Study Data ({self.today}):
-        
-Study Sessions Today: {self.session_count}
-Study Time Today: {total_hours} hours {total_minutes} minutes
-Average Session Length: {self.study_duration} minutes
-
-Historical data stored in: {self.data_dir}/
-Each day's data is saved separately and resets daily."""
-        
-        messagebox.showinfo("Today's Study Data", data_text)
+    
     
     def on_closing(self):
         """Handle window closing - stop all sounds and threads"""
