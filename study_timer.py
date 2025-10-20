@@ -357,7 +357,12 @@ class StudyTimer:
             
             # Add to total study time
             self.total_study_time += elapsed_minutes
-            print(f"Added {elapsed_minutes:.2f} minutes of partial session to total study time")
+            
+            # Add partial session credit (decimal based on completion percentage)
+            partial_session_credit = elapsed_minutes / self.study_duration
+            self.session_count += partial_session_credit
+            
+            print(f"Added {elapsed_minutes:.2f} minutes and {partial_session_credit:.2f} session credit")
             
             # Save the updated data
             self.save_data()
