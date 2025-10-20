@@ -180,6 +180,10 @@ class StudyTimer:
         if self.is_study_time and self.session_start_time is None:
             self.session_start_time = time.time()
         
+        # Show break button during study sessions
+        if self.is_study_time:
+            self.break_button.grid()
+        
         self.timer_thread = threading.Thread(target=self.timer_loop, daemon=True)
         self.timer_thread.start()
     
@@ -187,6 +191,7 @@ class StudyTimer:
         """Pause the timer"""
         self.is_running = False
         self.start_button.config(text="Start")
+        self.break_button.grid_remove()  # Hide break button when paused
         self.stop_sound()
     
     def stop_timer(self):
@@ -209,7 +214,12 @@ class StudyTimer:
         self.stop_sound()
         
         # Add partial session time to total study time before switching to break
+        # Note: This does NOT count as a full session - only tracks actual study time
         self.add_partial_session_time()
+        
+        # Switch to break mode
+        self.is_study_time = False
+        self.time_remaining = self.break_duration * 60
         
         self.start_button.config(text="Pause")
         self.start_timer()
@@ -274,7 +284,7 @@ class StudyTimer:
             self.is_study_time = False
             self.time_remaining = self.break_duration * 60
             
-            # Show break button instead of auto-starting
+            # Break button should already be visible, just ensure it's shown
             self.break_button.grid()
         else:
             # Break completed

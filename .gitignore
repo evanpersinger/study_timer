@@ -8,3 +8,4 @@ __pycache__/
 .mypy_cache/
 .python-version
 data/data.json
+issues.txt
