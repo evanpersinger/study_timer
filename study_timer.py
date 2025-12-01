@@ -173,6 +173,21 @@ class StudyTimer:
     
     def start_timer(self):
         """Start the timer"""
+        # Don't start a new timer if one is already running
+        if self.is_running:
+            return
+        
+        # Wait for any existing timer thread to finish before starting a new one
+        if self.timer_thread is not None and self.timer_thread.is_alive():
+            # Wait up to 2 seconds for the thread to exit (enough time to finish current sleep)
+            self.timer_thread.join(timeout=2.0)
+            # Double-check the thread is actually dead before proceeding
+            if self.timer_thread.is_alive():
+                # Thread is still alive, wait a bit more and check is_running flag
+                time.sleep(0.2)
+                # If is_running was set to False, the thread should exit on next loop check
+                # We'll proceed but the old thread should stop when it sees is_running is False
+        
         self.is_running = True
         self.start_button.config(text="Pause")
         
@@ -217,6 +232,9 @@ class StudyTimer:
         # Note: This does NOT count as a full session - only tracks actual study time
         self.add_partial_session_time()
         
+        # Ensure any existing timer thread is stopped before starting a new one
+        self.is_running = False
+        
         # Switch to break mode
         self.is_study_time = False
         self.time_remaining = self.break_duration * 60
@@ -233,6 +251,13 @@ class StudyTimer:
         
         # Add partial session time to total study time before starting new study session
         self.add_partial_session_time()
+        
+        # Ensure any existing timer thread is stopped before starting a new one
+        self.is_running = False
+        
+        # Switch to study mode
+        self.is_study_time = True
+        self.time_remaining = self.study_duration * 60
         
         self.start_button.config(text="Pause")
         self.start_timer()
@@ -286,6 +311,7 @@ class StudyTimer:
             
             # Break button should already be visible, just ensure it's shown
             self.break_button.grid()
+            
         else:
             # Break completed
             self.play_notification_sound()
@@ -324,7 +350,7 @@ class StudyTimer:
             if platform.system() == "Windows":
                 while self.playing_sound:
                     winsound.Beep(1000, 200)  # 1000 Hz for 200ms (shorter beep)
-                    time.sleep(0.1)  # Wait 0.1 seconds between beeps
+                    time.sleep(0.3)  # Wait 0.3 seconds between beeps
             elif platform.system() == "Darwin":  # macOS
                 # Get the appropriate sound based on study duration
                 working_sound = self.get_sound_for_duration()
@@ -336,11 +362,11 @@ class StudyTimer:
                         print(f"Sound failed: {result.stderr}")
                         # Fallback to system beep
                         subprocess.run(["osascript", "-e", "beep"], capture_output=True)
-                    time.sleep(0.1)  # Wait 0.1 seconds between sounds
+                    time.sleep(0.3)  # Wait 0.3 seconds between sounds
             else:  # Linux
                 while self.playing_sound:
                     subprocess.run(["paplay", "/usr/share/sounds/alsa/Front_Left.wav"], capture_output=True)
-                    time.sleep(0.1)  # Wait 0.1 seconds between sounds
+                    time.sleep(0.3)  # Wait 0.3 seconds between sounds
         except Exception as e:
             print(f"Sound error: {e}")
     
