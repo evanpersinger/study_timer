@@ -114,11 +114,10 @@ class StudyTimer:
                   command=self.set_50_10).grid(row=0, column=1, padx=5)
         
         
-        # Temporarily disabled test button
-        """
-        ttk.Button(preset_frame, text="TEST (10 sec)", # Test button
+        # Test button for quick testing
+        # uncomment to enable test button
+        ttk.Button(preset_frame, text="TEST (5 sec)", 
                   command=self.set_test).grid(row=0, column=2, padx=5)
-        """
         
         # Control buttons
         control_frame = ttk.Frame(main_frame)
@@ -156,10 +155,10 @@ class StudyTimer:
             self.reset_timer()
     
     def set_test(self):
-        """Set timer to 10 second study, 10 second break (TEST MODE)"""
+        """Set timer to 5 second study, 5 second break (TEST MODE)"""
         if not self.is_running:
-            self.study_duration = 10/60  # 10 seconds (10/60 minutes)
-            self.break_duration = 10/60  # 10 seconds (10/60 minutes)
+            self.study_duration = 5/60  # 5 seconds (5/60 minutes)
+            self.break_duration = 5/60  # 5 seconds (5/60 minutes)
             self.reset_timer()
     
     def toggle_timer(self):
@@ -337,7 +336,7 @@ class StudyTimer:
     def get_sound_for_duration(self):
         """Get the appropriate sound based on study duration"""
         # For test mode (5 seconds), use Glass sound
-        if self.study_duration <= 0.1:  # Test mode (5 seconds or less)
+        if self.study_duration <= 0.1:  
             return "/System/Library/Sounds/Glass.aiff"
         elif self.study_duration == 25:
             return "/System/Library/Sounds/Glass.aiff"  # Glass sound for 25 min
@@ -350,11 +349,10 @@ class StudyTimer:
             if platform.system() == "Windows":
                 while self.playing_sound:
                     winsound.Beep(1000, 200)  # 1000 Hz for 200ms (shorter beep)
-                    time.sleep(0.3)  # Wait 0.3 seconds between beeps
+                    time.sleep(2.5)  # Wait 2.5 seconds between beeps
             elif platform.system() == "Darwin":  # macOS
                 # Get the appropriate sound based on study duration
                 working_sound = self.get_sound_for_duration()
-                print(f"Playing sound: {working_sound}")  # Debug
                 
                 while self.playing_sound:
                     result = subprocess.run(["afplay", working_sound], capture_output=True, text=True)
@@ -362,11 +360,11 @@ class StudyTimer:
                         print(f"Sound failed: {result.stderr}")
                         # Fallback to system beep
                         subprocess.run(["osascript", "-e", "beep"], capture_output=True)
-                    time.sleep(0.3)  # Wait 0.3 seconds between sounds
+                    time.sleep(2.5)  # Wait 2.5 seconds between sounds
             else:  # Linux
                 while self.playing_sound:
                     subprocess.run(["paplay", "/usr/share/sounds/alsa/Front_Left.wav"], capture_output=True)
-                    time.sleep(0.3)  # Wait 0.3 seconds between sounds
+                    time.sleep(2.5)  # Wait 2.5 seconds between sounds
         except Exception as e:
             print(f"Sound error: {e}")
     
