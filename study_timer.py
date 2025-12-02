@@ -83,23 +83,47 @@ class StudyTimer:
                   relief=[('active', 'solid')],        # Solid border on hover
                   borderwidth=[('active', '2')])       # 2px border on hover
         
-        # Title
-        title_label = ttk.Label(main_frame, text="Study Timer", font=("Arial", 16, "bold"))
-        title_label.grid(row=0, column=0, columnspan=2, pady=(0, 20))
+        # Title with white border
+        title_frame = tk.Frame(main_frame, bg='white', highlightthickness=2, highlightbackground='white')
+        title_frame.grid(row=0, column=0, columnspan=2, pady=(0, 20))
+        title_label = tk.Label(title_frame, text="Study Timer", font=("Arial", 16, "bold"), 
+                              bg='black', fg='white', padx=10, pady=5)
+        title_label.pack()
+        # Add hover effect
+        title_label.bind("<Enter>", lambda e: title_label.config(bg='gray30'))
+        title_label.bind("<Leave>", lambda e: title_label.config(bg='black'))
+        title_frame.bind("<Enter>", lambda e: title_label.config(bg='gray30'))
+        title_frame.bind("<Leave>", lambda e: title_label.config(bg='black'))
         
         # Timer display - dual clocks
         timer_frame = ttk.Frame(main_frame)
         timer_frame.grid(row=1, column=0, columnspan=2, pady=20)
         
         # Active timer (left) - shows current countdown
-        self.active_label = ttk.Label(timer_frame, text="Study", font=("Arial", 14, "bold"))
-        self.active_label.grid(row=0, column=0, padx=(0, 20))
+        active_frame = tk.Frame(timer_frame, bg='white', highlightthickness=2, highlightbackground='white')
+        active_frame.grid(row=0, column=0, padx=(0, 20))
+        self.active_label = tk.Label(active_frame, text="Study", font=("Arial", 14, "bold"),
+                                     bg='black', fg='white', padx=8, pady=3)
+        self.active_label.pack()
+        # Add hover effect
+        self.active_label.bind("<Enter>", lambda e: self.active_label.config(bg='gray30'))
+        self.active_label.bind("<Leave>", lambda e: self.active_label.config(bg='black'))
+        active_frame.bind("<Enter>", lambda e: self.active_label.config(bg='gray30'))
+        active_frame.bind("<Leave>", lambda e: self.active_label.config(bg='black'))
         self.timer_label = ttk.Label(timer_frame, text="25:00", font=("Arial", 32, "bold"))
         self.timer_label.grid(row=1, column=0, padx=(0, 20))
         
         # Reference timer (right) - shows next timer duration
-        self.reference_label = ttk.Label(timer_frame, text="Break", font=("Arial", 14, "bold"))
-        self.reference_label.grid(row=0, column=1, padx=(20, 0))
+        reference_frame = tk.Frame(timer_frame, bg='white', highlightthickness=2, highlightbackground='white')
+        reference_frame.grid(row=0, column=1, padx=(20, 0))
+        self.reference_label = tk.Label(reference_frame, text="Break", font=("Arial", 14, "bold"),
+                                       bg='black', fg='white', padx=8, pady=3)
+        self.reference_label.pack()
+        # Add hover effect
+        self.reference_label.bind("<Enter>", lambda e: self.reference_label.config(bg='gray30'))
+        self.reference_label.bind("<Leave>", lambda e: self.reference_label.config(bg='black'))
+        reference_frame.bind("<Enter>", lambda e: self.reference_label.config(bg='gray30'))
+        reference_frame.bind("<Leave>", lambda e: self.reference_label.config(bg='black'))
         self.break_timer_label = ttk.Label(timer_frame, text="05:00", font=("Arial", 32, "bold"))
         self.break_timer_label.grid(row=1, column=1, padx=(20, 0))
         
