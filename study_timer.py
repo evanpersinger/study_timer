@@ -22,9 +22,10 @@ if platform.system() == "Windows":
 class StudyTimer:
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("Study Timer")
+        self.root.title("")  # Remove duplicate title
         self.root.geometry("440x320")
         self.root.resizable(False, False)
+        self.root.overrideredirect(True)  # Remove window title bar
         
         # Set dark theme colors
         self.root.configure(bg='black')
