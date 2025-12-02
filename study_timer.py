@@ -116,8 +116,8 @@ class StudyTimer:
         
         # Test button for quick testing
         # uncomment to enable test button
-        ttk.Button(preset_frame, text="TEST (5 sec)", 
-                  command=self.set_test).grid(row=0, column=2, padx=5)
+        # ttk.Button(preset_frame, text="TEST (5 sec)", 
+        #          command=self.set_test).grid(row=0, column=2, padx=5)
         
         # Control buttons
         control_frame = ttk.Frame(main_frame)
