@@ -7,15 +7,20 @@ A simple, effective Pomodoro-style study timer built with Python and tkinter. Pe
 - **Two Preset Modes:**
   - 25 minute study / 5 minute break (Classic Pomodoro)
   - 50 minute study / 10 minute break (Extended Pomodoro)
+- **Test Mode** - 5-second test mode for quick testing of timer functions (can be enabled in code)
 - **Dual Timer Display** - Shows both current countdown and next session duration
-- **Smart Audio Notifications** - Different sounds for different study durations (Glass for 25min, Ping for 50min)
+- **Smart Audio Notifications** - Different sounds for different study durations (Glass for 25min, Ping for 50min) with adjustable playback speed
 - **Manual Control** - Start Break and Start Study buttons for flexible timing
 - **Smart Session Tracking** - Counts partial sessions as decimals (e.g., 0.5 for half a session) plus tracks total study time
 - **Daily Data Collection** - Tracks sessions and study time with automatic daily reset
 - **Historical Data Storage** - Saves all daily data in one organized file for long-term tracking
 - **Real-time Progress Display** - Live session count and total study time at bottom of interface
 - **Cross-Platform Audio** - Works on Windows (winsound), macOS (afplay), and Linux (paplay)
-- **Dark Theme Interface** - Clean, distraction-free GUI with custom button hover effects
+- **Modern Dark Theme Interface** - Clean, distraction-free GUI with:
+  - White-bordered labels for "Study Timer", "Study", and "Break"
+  - Hover effects (grey background) on interactive elements
+  - Custom button hover effects
+  - Frameless window design (no title bar)
 - **Automatic Data Persistence** - Saves progress automatically and loads on startup
 
 ## How to Use
@@ -32,6 +37,7 @@ A simple, effective Pomodoro-style study timer built with Python and tkinter. Pe
 2. **Choose your preset:**
    - Click "25 min study / 5 min break" for classic Pomodoro
    - Click "50 min study / 10 min break" for longer sessions
+   - (Optional) Enable "TEST (5 sec)" button in code for quick testing
 
 3. **Start studying:**
    - Click "Start" to begin your study session

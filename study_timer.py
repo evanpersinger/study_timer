@@ -521,8 +521,8 @@ def main():
     """Main function to run the study timer"""
     print("Starting Study Timer...")
     print("Available presets:")
-    print("- 25 minute study / 5 minute break")
-    print("- 50 minute study / 10 minute break ")
+    print("- 25 / 5 ")
+    print("- 50 / 10 ")
     print()
     
     app = StudyTimer()
