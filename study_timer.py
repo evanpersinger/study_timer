@@ -25,7 +25,6 @@ class StudyTimer:
         self.root.title("")  # Remove duplicate title
         self.root.geometry("440x320")
         self.root.resizable(False, False)
-        self.root.overrideredirect(True)  # Remove window title bar
         
         # Set dark theme colors
         self.root.configure(bg='black')
