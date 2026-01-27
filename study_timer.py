@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
+
 """
-Study Timer - A Pomodoro-style timer for focused study sessions
+Study Timer
 Supports both 50/10 minute and 25/5 minute study/break intervals
+Tracks study sessions and total study time per day
 """
 
 import time
