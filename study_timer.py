@@ -14,10 +14,23 @@ import subprocess
 import os
 import json
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Import winsound only on Windows
 if platform.system() == "Windows":
     import winsound
+
+# Import Spotify library
+try:
+    import spotipy
+    from spotipy.oauth2 import SpotifyOAuth
+    SPOTIFY_AVAILABLE = True
+except ImportError:
+    SPOTIFY_AVAILABLE = False
+    print("Warning: Spotify integration not available. Install with: uv pip install spotipy python-dotenv")
 
 
 class StudyTimer:
@@ -55,12 +68,72 @@ class StudyTimer:
         self.data_file = os.path.join(self.data_dir, "data.json")
         self.load_data()
         
+        # Spotify integration
+        self.spotify_enabled = False
+        self.spotify_client = None
+        self.device_id = None
+        self.track_uri = os.getenv("SPOTIFY_TRACK_URI", "spotify:episode:0omBcuWx5qZCLqEDepi1xf")
+        self.init_spotify()
+        
         # Setup UI
         self.setup_ui()
         self.update_display()
         
         # Handle window closing
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+    
+    def init_spotify(self):
+        """Initialize Spotify client"""
+        if not SPOTIFY_AVAILABLE:
+            print("Spotify library not installed")
+            return
+        
+        try:
+            client_id = os.getenv("SPOTIFY_CLIENT_ID")
+            client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
+            redirect_uri = os.getenv("SPOTIFY_REDIRECT_URI", "http://localhost:8888/callback")
+            
+            if not client_id or not client_secret:
+                print("Spotify credentials not found in .env file")
+                return
+            
+            auth_manager = SpotifyOAuth(
+                client_id=client_id,
+                client_secret=client_secret,
+                redirect_uri=redirect_uri,
+                scope="user-modify-playback-state,user-read-playback-state"
+            )
+            
+            self.spotify_client = spotipy.Spotify(auth_manager=auth_manager)
+            self.spotify_enabled = True
+            self.get_active_device()
+            print("Spotify initialized successfully")
+        except Exception as e:
+            print(f"Failed to initialize Spotify: {e}")
+            self.spotify_enabled = False
+    
+    def get_active_device(self):
+        """Get the active Spotify device ID"""
+        if not self.spotify_enabled or not self.spotify_client:
+            return
+        
+        try:
+            devices = self.spotify_client.devices()
+            if devices['devices']:
+                for device in devices['devices']:
+                    if device['is_active']:
+                        self.device_id = device['id']
+                        print(f"Using Spotify device: {device['name']}")
+                        return
+                # If no active device, use the first available
+                self.device_id = devices['devices'][0]['id']
+                print(f"Using Spotify device: {devices['devices'][0]['name']}")
+            else:
+                print("No Spotify devices found. Make sure Spotify is open on at least one device.")
+                self.spotify_enabled = False
+        except Exception as e:
+            print(f"Failed to get Spotify device: {e}")
+            self.spotify_enabled = False
     
     def setup_ui(self):
         """Create the user interface"""
@@ -218,6 +291,8 @@ class StudyTimer:
         # Set session start time if starting a study session
         if self.is_study_time and self.session_start_time is None:
             self.session_start_time = time.time()
+            # Start Spotify playback for study session
+            self.play_spotify()
         
         # Show break button during study sessions
         if self.is_study_time:
@@ -232,6 +307,7 @@ class StudyTimer:
         self.start_button.config(text="Start")
         self.break_button.grid_remove()  # Hide break button when paused
         self.stop_sound()
+        self.stop_spotify()
     
     def stop_timer(self):
         """Stop the timer and sound only"""
@@ -251,6 +327,7 @@ class StudyTimer:
         self.break_button.grid_remove()  # Hide the break button
         self.playing_sound = False  # Stop the notification sound
         self.stop_sound()
+        self.stop_spotify()  # Stop Spotify during break
         
         # Add partial session time to total study time before switching to break
         # Note: This does NOT count as a full session - only tracks actual study time
@@ -284,7 +361,7 @@ class StudyTimer:
         self.time_remaining = self.study_duration * 60
         
         self.start_button.config(text="Pause")
-        self.start_timer()
+        self.start_timer()  # This will call play_spotify() internally
         self.update_display()
     
     def reset_timer(self):
@@ -397,6 +474,31 @@ class StudyTimer:
         """Stop playing notification sound"""
         self.playing_sound = False
     
+    def play_spotify(self):
+        """Start playing the 40Hz beat on Spotify"""
+        if not self.spotify_enabled or not self.spotify_client or not self.device_id:
+            return
+        
+        try:
+            self.spotify_client.start_playback(
+                device_id=self.device_id,
+                uris=[self.track_uri]
+            )
+            print(f"Started playing Spotify: {self.track_uri}")
+        except Exception as e:
+            print(f"Failed to play Spotify: {e}")
+    
+    def stop_spotify(self):
+        """Stop playing Spotify"""
+        if not self.spotify_enabled or not self.spotify_client or not self.device_id:
+            return
+        
+        try:
+            self.spotify_client.pause_playback(device_id=self.device_id)
+            print("Paused Spotify playback")
+        except Exception as e:
+            print(f"Failed to pause Spotify: {e}")
+    
     def add_partial_session_time(self):
         """Add partial session time to total study time if in study mode"""
         if self.is_study_time and self.session_start_time is not None:
@@ -481,6 +583,7 @@ class StudyTimer:
         """Handle window closing - stop all sounds and threads"""
         self.is_running = False
         self.playing_sound = False
+        self.stop_spotify()
         self.save_data()  # Save data before closing
         self.root.destroy()
     

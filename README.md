@@ -1,6 +1,6 @@
 # Study Timer
 
-A simple, effective Pomodoro-style study timer built with Python and tkinter. Perfect for students who need focused study sessions with comprehensive progress tracking!
+A simple, effective Pomodoro-style study timer built with Python and tkinter. Perfect for students who need focused study sessions with comprehensive progress tracking and integrated Spotify background music!
 
 ## Features
 
@@ -10,6 +10,7 @@ A simple, effective Pomodoro-style study timer built with Python and tkinter. Pe
 - **Test Mode** - 5-second test mode for quick testing of timer functions (can be enabled in code)
 - **Dual Timer Display** - Shows both current countdown and next session duration
 - **Smart Audio Notifications** - Different sounds for different study durations (Glass for 25min, Ping for 50min) with adjustable playback speed
+- **Spotify Integration** - Automatically plays a 40Hz binaural beat from Spotify during study sessions for enhanced focus and concentration
 - **Manual Control** - Start Break and Start Study buttons for flexible timing
 - **Smart Session Tracking** - Counts partial sessions as decimals (e.g., 0.5 for half a session) plus tracks total study time
 - **Daily Data Collection** - Tracks sessions and study time with automatic daily reset
@@ -41,10 +42,12 @@ A simple, effective Pomodoro-style study timer built with Python and tkinter. Pe
 
 3. **Start studying:**
    - Click "Start" to begin your study session
+   - Spotify will automatically play the 40Hz beat (if configured)
    - The left timer shows your current countdown, right timer shows next session duration
    - When study time ends, click "Start Break" when you're ready for a break
-   - When break time ends, click "Start Study" when you're ready to continue
-   - Click "Pause" to pause the timer
+   - Music will pause during your break
+   - When break time ends, click "Start Study" to resume (music will start again)
+   - Click "Pause" to pause the timer and music
    - Click "Stop" to stop the notification sound
    - Click "Reset" to start over
 
@@ -96,7 +99,7 @@ The data file contains all days organized by date:
 
 ## Installation
 
-No external dependencies required! This uses only Python standard library modules.
+No external dependencies required for basic usage! For Spotify integration, you'll need to install the Spotify API library.
 
 ### Quick Start
 
@@ -107,9 +110,36 @@ cd study_timer
 # Setup data file (first time only)
 cp data/data_example.json data/data.json
 
+# Install dependencies (includes Spotify integration)
+uv pip install -r requirements.txt
+
 # Run the timer
 python study_timer.py
 ```
+
+### Spotify Setup (Optional but Recommended)
+
+To enable Spotify integration for background music during study sessions:
+
+1. **Get Spotify API credentials:**
+   - Go to https://developer.spotify.com/dashboard
+   - Log in or create a Spotify account
+   - Create a new application
+   - Copy your `Client ID` and `Client Secret`
+
+2. **Create `.env` file in project root:**
+   ```bash
+   cat > .env << 'EOF'
+   SPOTIFY_CLIENT_ID=your_client_id
+   SPOTIFY_CLIENT_SECRET=your_client_secret
+   SPOTIFY_REDIRECT_URI=http://localhost:8888/callback
+   SPOTIFY_TRACK_URI=spotify:episode:0omBcuWx5qZCLqEDepi1xf
+   EOF
+   ```
+
+3. **Make sure Spotify is open** on at least one device before running the timer
+
+The app will automatically play the 40Hz binaural beat when you start a study session and pause it during breaks.
 
 ### Virtual Environment (Recommended)
 
@@ -123,6 +153,9 @@ source venv/bin/activate
 # On Windows:
 venv\Scripts\activate
 
+# Install dependencies
+uv pip install -r requirements.txt
+
 # Run the timer
 python study_timer.py
 ```
@@ -132,6 +165,7 @@ python study_timer.py
 - Python 3.6 or higher
 - tkinter (usually comes with Python)
 - Audio system for notifications
+- Spotify Premium account (optional, for background music feature)
 
 ## Tips for Effective Study Sessions
 
@@ -149,10 +183,12 @@ python study_timer.py
 ## Troubleshooting
 
 - **No sound notifications?** The timer will still work, just check the popup messages. On macOS, sounds use system audio files.
+- **Spotify not playing?** Make sure Spotify is open on at least one device, you have Premium, and your `.env` file is configured correctly with valid API credentials.
 - **GUI not appearing?** Make sure you have tkinter installed: `python -m tkinter`
 - **Timer not accurate?** The timer updates every second, slight delays are normal
 - **Data not saving?** Make sure the `data/` directory exists and you have write permissions
 - **Virtual environment issues?** Make sure you've activated your virtual environment before running
 - **Audio not working on Linux?** Install pulseaudio: `sudo apt-get install pulseaudio-utils`
+- **Spotify API errors?** Double-check your `Client ID` and `Client Secret` in the `.env` file
 
-Happy studying! 📚⏰
+Happy studying!
