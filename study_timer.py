@@ -49,6 +49,10 @@ class StudyTimer:
         self.sound_thread = None 
         self.playing_sound = False # indicates whether the sound is playing
         
+        # Audio playback
+        self.audio_file = "binaural_beat.mp3"
+        self.audio_process = None
+        
         # Session tracking
         self.session_count = 0
         self.total_study_time = 0
@@ -223,6 +227,7 @@ class StudyTimer:
         # Set session start time if starting a study session
         if self.is_study_time and self.session_start_time is None:
             self.session_start_time = time.time()
+            self.play_audio()  # Start audio for study session
         
         # Show break button during study sessions
         if self.is_study_time:
@@ -237,12 +242,14 @@ class StudyTimer:
         self.start_button.config(text="Start")
         self.break_button.grid_remove()  # Hide break button when paused
         self.stop_sound()
+        self.stop_audio()
     
     def stop_timer(self):
         """Stop the timer and sound only"""
         self.is_running = False
         self.playing_sound = False
         self.stop_sound()
+        self.stop_audio()
         
         # Add partial session time to total study time
         self.add_partial_session_time()
@@ -256,6 +263,7 @@ class StudyTimer:
         self.break_button.grid_remove()  # Hide the break button
         self.playing_sound = False  # Stop the notification sound
         self.stop_sound()
+        self.stop_audio()  # Stop audio during break
         
         # Add partial session time to total study time before switching to break
         # Note: This does NOT count as a full session - only tracks actual study time
@@ -305,6 +313,7 @@ class StudyTimer:
         self.break_button.grid_remove()  # Hide break button
         self.study_button.grid_remove()  # Hide study button
         self.stop_sound()
+        self.stop_audio()  # Stop audio when resetting
         self.update_display()
     
     def timer_loop(self):
@@ -402,6 +411,44 @@ class StudyTimer:
         """Stop playing notification sound"""
         self.playing_sound = False
     
+    def play_audio(self):
+        """Start playing the binaural beat audio file"""
+        if self.audio_process is None and os.path.exists(self.audio_file):
+            try:
+                if platform.system() == "Darwin":  # macOS
+                    self.audio_process = subprocess.Popen(
+                        ["afplay", self.audio_file],
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL
+                    )
+                elif platform.system() == "Windows":
+                    # On Windows, use winsound or another player
+                    print("Audio playback not yet supported on Windows")
+                else:  # Linux
+                    self.audio_process = subprocess.Popen(
+                        ["paplay", self.audio_file],
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL
+                    )
+            except Exception as e:
+                print(f"Failed to play audio: {e}")
+    
+    def stop_audio(self):
+        """Stop playing the binaural beat audio file"""
+        if self.audio_process is not None:
+            try:
+                self.audio_process.terminate()
+                self.audio_process.wait(timeout=1)
+                self.audio_process = None
+            except Exception as e:
+                print(f"Failed to stop audio: {e}")
+                # Force kill if terminate didn't work
+                try:
+                    self.audio_process.kill()
+                    self.audio_process = None
+                except:
+                    pass
+    
     def add_partial_session_time(self):
         """Add partial session time to total study time if in study mode"""
         if self.is_study_time and self.session_start_time is not None:
@@ -486,6 +533,7 @@ class StudyTimer:
         """Handle window closing - stop all sounds and threads"""
         self.is_running = False
         self.playing_sound = False
+        self.stop_audio()
         self.save_data()  # Save data before closing
         self.root.destroy()
     
