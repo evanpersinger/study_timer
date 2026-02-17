@@ -314,6 +314,7 @@ class StudyTimer:
         self.is_running = False
         self.playing_sound = False
         self.stop_sound()
+        self.stop_spotify()  # Stop Spotify when stopping timer
         
         # Add partial session time to total study time
         self.add_partial_session_time()
