@@ -338,7 +338,7 @@ class StudyTimer:
             self.session_count += 1
             self.total_study_time += self.study_duration
             self.save_data()  # Save data after each study session
-            self.play_notification_sound()
+            self.stop_audio()  # Stop the binaural beat when study session ends
             
             # Reset session start time since session completed naturally
             self.session_start_time = None

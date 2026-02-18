@@ -9,8 +9,7 @@ A simple, effective Pomodoro-style study timer built with Python and tkinter. Pe
   - 50 minute study / 10 minute break (Extended Pomodoro)
 - **Test Mode** - 5-second test mode for quick testing of timer functions (can be enabled in code)
 - **Dual Timer Display** - Shows both current countdown and next session duration
-- **Smart Audio Notifications** - Different sounds for different study durations (Glass for 25min, Ping for 50min) with adjustable playback speed
-- **Binaural Beat Audio** - Plays a local 40Hz binaural beat audio file during study sessions for enhanced focus and concentration
+- **Binaural Beat Audio** - Plays a local 40Hz binaural beat audio file during study sessions for enhanced focus and concentration, automatically stops when session ends
 - **Manual Control** - Start Break and Start Study buttons for flexible timing
 - **Smart Session Tracking** - Counts partial sessions as decimals (e.g., 0.5 for half a session) plus tracks total study time
 - **Daily Data Collection** - Tracks sessions and study time with automatic daily reset
@@ -44,11 +43,10 @@ A simple, effective Pomodoro-style study timer built with Python and tkinter. Pe
    - Click "Start" to begin your study session
    - The binaural beat audio will automatically play (if the binaural_beat.mp3 file exists)
    - The left timer shows your current countdown, right timer shows next session duration
-   - When study time ends, click "Start Break" when you're ready for a break
+   - When study time ends, the binaural beat stops and you can click "Start Break" when ready
    - Audio will pause during your break
    - When break time ends, click "Start Study" to resume (audio will start again)
    - Click "Pause" to pause the timer and audio
-   - Click "Stop" to stop the notification sound
    - Click "Reset" to start over
 
 4. **Track your progress:**
@@ -160,7 +158,7 @@ python study_timer.py
 4. **Take breaks seriously** - Step away from your desk during break time
 5. **Track your progress** - Monitor your daily sessions (including partial sessions as decimals) and total study time in real-time at the bottom
 6. **Build habits** - Use the session counter to maintain consistent study routines
-7. **Stop notifications** - Click "Stop" to silence the notification sound when you're ready
+7. **Binaural beat** - The 40Hz beat automatically stops when your study session ends
 8. **Don't worry about interruptions** - Partial sessions count as decimals (e.g., 0.5 for half a session) so you get credit for partial work
 9. **Use the dual display** - The right timer shows your next session duration for better planning
 10. **Data persistence** - Your progress is automatically saved, so you can close and reopen anytime
